@@ -12,10 +12,35 @@
             padding: 0;
         }
 
+        h1 {
+            color: white;
+        }
+
         header {
             width: 100%;
-            background-color: red;
+
+
         }
+
+        .overskrift_indhold {
+            max-width: 400px;
+            margin: 0 auto;
+
+            padding: 10px;
+
+        }
+
+        .box {
+            background-color: #de852b;
+        }
+
+        .nav_indhold {
+            max-width: 400px;
+            margin: 0 auto;
+
+            padding: 10px;
+        }
+
 
         img {
             max-width: 100%;
@@ -40,31 +65,81 @@
         }
 
         article:nth-of-type(even) {
-            background-color: darkgrey;
+            background-color: rgba(201, 201, 201, 0.51);
         }
 
         footer {
             background-color: grey;
+            width: 100%;
+
         }
 
+        footer .footer_item {
+
+            padding: 10px;
+        }
+
+        .footer_indhold {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+
+
         @media only screen and (min-width: 700px) {
+
+            article:nth-of-type(even) {
+                background-color: rgba(255, 255, 255, 0);
+            }
+
+            article:nth-child(4n+2) {
+                background-color: rgba(201, 201, 201, 0.51);
+            }
+
+
+            article:nth-child(4n+3) {
+                background-color: rgba(201, 201, 201, 0.51);
+            }
+
+
             .data-dest {
                 grid-template-columns: repeat(2, 1fr);
                 max-width: 600px;
                 margin: 0 auto;
             }
 
+            .overskrift_indhold {
+                max-width: 600px;
+            }
+
+            .nav_indhold {
+                max-width: 600px;
+            }
+
+            .footer_indhold {
+                max-width: 600px;
+            }
+
             .footer_container {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            article:nth-of-type(even) {
-                background-color: rgba(255, 255, 255, 0);
+            h1 {
+                font-size: 3.5em;
             }
 
         }
 
         @media only screen and (min-width: 1050px) {
+            article:nth-child(4n+2) {
+                background-color: rgba(255, 255, 255, 0);
+            }
+
+
+            article:nth-child(4n+3) {
+                background-color: rgba(255, 255, 255, 0);
+            }
+
             .data-dest {
                 grid-template-columns: repeat(3, 1fr);
                 max-width: 800px;
@@ -72,9 +147,26 @@
             }
 
             article:nth-of-type(even) {
-                background-color: darkgrey;
+                background-color: rgba(201, 201, 201, 0.51);
 
             }
+
+            .overskrift_indhold {
+                max-width: 800px;
+            }
+
+            .nav_indhold {
+                max-width: 800px;
+            }
+
+            .footer_indhold {
+                max-width: 800px;
+            }
+
+            h1 {
+                font-size: 5em;
+            }
+
 
         }
     </style>
@@ -82,7 +174,21 @@
 
 <body>
     <header>
-        <h1>BISTRO BABUSHKA</h1>
+        <div class="box">
+            <div class="overskrift_indhold">
+                <h1>BISTRO BABUSHKA</h1>
+            </div>
+        </div>
+        <div class="nav_indhold">
+            <nav>
+                <button class="menu-item" data-kategori="alle">Alle</button>
+                <button class="menu-item" data-kategori="forretter">Forretter</button>
+                <button class="menu-item" data-kategori="hovedretter">Hovedretter</button>
+                <button class="menu-item" data-kategori="sideorders">Sideorders</button>
+                <button class="menu-item" data-kategori="desserter">Desserter</button>
+                <button class="menu-item" data-kategori="drikkevarer">Drikkevarer</button>
+            </nav>
+        </div>
     </header>
 
     <section class="data-dest"></section>
@@ -100,21 +206,24 @@
         </article>
     </template>
     <footer>
-        <div class="footer_container">
-            <div class="footer_item">
-                <h4>Adresse:</h4>
-                <p>Grønnegade 97<br>1234 København K</p>
-            </div>
-            <div class="footer_item">
-                <h4>Åbningstider:</h4>
-                <p>Mandag-fredag 10:30 - 22:00<br>Lørdag 12:00 - 23:00</p>
+        <div class="footer_indhold">
+            <div class="footer_container">
+                <div class="footer_item">
+                    <h4>Adresse:</h4>
+                    <p>Grønnegade 97<br>1234 København K</p>
+                </div>
+                <div class="footer_item">
+                    <h4>Åbningstider:</h4>
+                    <p>Mandag-fredag 10:30 - 22:00<br>Lørdag 12:00 - 23:00</p>
+                </div>
             </div>
         </div>
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", hentJson);
-
+        let destination = document.querySelector(".data-dest");
         let menu;
+        let kategoriFilter = "alle"; //filtervariabel
 
         async function hentJson() {
 
@@ -125,29 +234,40 @@
             visMenu();
 
         }
+        document.querySelectorAll(".menu-item").forEach(knap => {
+            knap.addEventListener("click", filtrering)
+        })
+
+        function filtrering() {
+            destination.textContent = "";
+            kategoriFilter = this.getAttribute("data-kategori");
+            visMenu();
+        }
 
         function visMenu() {
 
-            let destination = document.querySelector(".data-dest");
             let temp = document.querySelector(".data-template");
 
             //Løb personlisten igennem og lav en klon
 
             menu.forEach(ret => {
+                if (ret.kategori == kategoriFilter || kategoriFilter == "alle") {
+                    let klon = temp.cloneNode(true).content;
+                    //indsæt data i html
+                    klon.querySelector("img").src = "imgs/small/" + ret.billede + "-sm.jpg";
+                    klon.querySelector("h2").textContent = ret.navn;
+                    klon.querySelector(".data-kortbeskrivelse").textContent = ret.kortbeskrivelse;
+                    klon.querySelector(".data-pris").textContent = "Pris " + ret.pris + ",-";
 
-                let klon = temp.cloneNode(true).content;
-                //indsæt data i html
-                klon.querySelector("img").src = "imgs/small/" + ret.billede + "-sm.jpg";
-                klon.querySelector("h2").textContent = ret.navn;
-                klon.querySelector(".data-kortbeskrivelse").textContent = ret.kortbeskrivelse;
-                klon.querySelector(".data-pris").textContent = "Pris " + ret.pris + ",-";
 
-
-                //placer klon i html
-                destination.appendChild(klon);
+                    //placer klon i html
+                    destination.appendChild(klon);
+                }
             })
         }
     </script>
 </body>
 
 </html>
+
+
