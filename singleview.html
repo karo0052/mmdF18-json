@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hent JSON</title>
+    <style>
+        body {
+            background-color: rgb(240, 240, 240);
+        }
+
+        article {
+            padding: 15px;
+            background-color: white;
+        }
+
+        .data-destination article img {
+            width: 100%;
+        }
+
+        .data-destination {
+            margin: 0 auto;
+            display: grid;
+            max-width: 400px;
+        }
+
+        button {
+            margin: 10px 0;
+        }
+
+        @media screen and (min-width:700px) {
+            .data-destination {
+                padding-left: 10%;
+                padding-right: 10%;
+                grid-template-columns: repeat(1, 1fr);
+                max-width: 600px;
+            }
+        }
+
+        @media screen and (min-width:580px) {
+            .data-destination {
+                max-width: 800px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="tilbage">Tilbage</button>
+    <section class="data-destination">
+        <article class="ret">
+            <img src="" alt=""><br>
+            <h2></h2>
+            Oprindelse: <span class="data-oprindelsesregion"></span><br>
+            <br><span class="data-langbeskrivelse"></span><br>
+        </article>
+    </section>
+
+
+    <script>
+        let urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get("id");
+        console.log(id);
+
+        let menu;
+        document.addEventListener("DOMContentLoaded", hentJson);
+        async function hentJson() {
+            let myJson = await fetch("menu.json");
+            menu = await myJson.json();
+            visRet();
+        }
+
+        function visRet() {
+            let destination = document.querySelector(".data-destination");
+            menu.forEach(ret => {
+                if (ret.id == id) {
+                    destination.querySelector("h2").textContent = ret.navn;
+                    destination.querySelector("img").src = "imgs/medium/" + ret.billede + "-md.jpg";
+                    destination.querySelector(".data-oprindelsesregion").textContent = ret.oprindelsesregion;
+                    destination.querySelector(".data-langbeskrivelse").textContent = ret.langbeskrivelse;
+
+                    if (ret.langbeskrivelse == null) {
+                        console.log("null");
+                        destination.querySelector(".data-langbeskrivelse").textContent = ret.kortbeskrivelse;
+                    }
+
+                    document.querySelector("button").addEventListener("click", () => {
+                        window.location.href = "index.html";
+                    })
+
+                }
+
+            })
+        }
+    </script>
+</body>
+
+</html>

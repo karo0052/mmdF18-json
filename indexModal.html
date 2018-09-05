@@ -12,13 +12,18 @@
             padding: 0;
         }
 
+        /*
+        body {
+            overflow: hidden;
+        }
+*/
+
         h1 {
             color: white;
         }
 
         header {
             width: 100%;
-
 
         }
 
@@ -39,6 +44,41 @@
             margin: 0 auto;
 
             padding: 10px;
+        }
+
+
+        #modal {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            text-align: center;
+            background-color: rgba(0, 0, 0, .7);
+            opacity: 0;
+            pointer-events: none;
+            transition: 1s;
+            overflow: scroll;
+        }
+
+
+        #modal-content {
+            width: 90vw;
+            height: auto;
+            background-color: rgba(250, 250, 250, 1);
+            margin: auto;
+            margin-top: 5vw;
+            padding: 1em;
+
+        }
+
+        #modal-content button {
+            margin: 1em;
+        }
+
+        #modal.vis {
+            opacity: 1;
+            pointer-events: all;
+            transition: 0.4s;
+
         }
 
 
@@ -128,6 +168,11 @@
                 font-size: 3.5em;
             }
 
+            #modal-content {
+                width: 80vw;
+
+            }
+
         }
 
         @media only screen and (min-width: 1050px) {
@@ -167,12 +212,32 @@
                 font-size: 5em;
             }
 
+            #modal-content {
+                width: 50vw;
+
+            }
+
 
         }
     </style>
 </head>
 
 <body>
+    <section id="modal">
+        <div id="modal-content">
+            <button>Luk</button>
+            <br>
+            <img class="modal-billede" src="" alt="">
+            <h2 class="modal-navn"></h2>
+            <p class="modal-oprindelsesregion"></p>
+            <p class="modal-langbeskrivelse"></p>
+            <p class="modal-kortbeskrivelse"></p>
+        </div>
+        <section id="klikker">
+        </section>
+
+    </section>
+
     <header>
         <div class="box">
             <div class="overskrift_indhold">
@@ -190,6 +255,9 @@
             </nav>
         </div>
     </header>
+
+
+
 
     <section class="data-dest"></section>
     <template class="data-template">
@@ -220,6 +288,7 @@
         </div>
     </footer>
     <script>
+        let modal = document.querySelector("#modal");
         document.addEventListener("DOMContentLoaded", hentJson);
         let destination = document.querySelector(".data-dest");
         let menu;
@@ -255,11 +324,12 @@
                     let klon = temp.cloneNode(true).content;
                     //indsæt data i html
                     klon.querySelector("img").src = "imgs/small/" + ret.billede + "-sm.jpg";
+                    klon.querySelector("h2").textContent = ret.navn;
 
                     klon.querySelector("img").addEventListener("click", () => {
-                        window.location.href = "singleview.html?id=" + ret.id;
-                    })
-                    klon.querySelector("h2").textContent = ret.navn;
+                        visModal(ret);
+                    });
+
                     klon.querySelector(".data-kortbeskrivelse").textContent = ret.kortbeskrivelse;
                     klon.querySelector(".data-pris").textContent = "Pris " + ret.pris + ",-";
 
@@ -268,6 +338,32 @@
                     destination.appendChild(klon);
                 }
             })
+        }
+
+        function visModal(retten) {
+            modal.classList.add("vis");
+            //modal.classList.add("kanKlikke");
+            console.log("klassetilføjet");
+
+
+            modal.querySelector(".modal-billede").src = "imgs/small/" + retten.billede + "-sm.jpg";
+            modal.querySelector(".modal-billede").alt = "foto af " + retten.navn;
+            modal.querySelector(".modal-navn").textContent = retten.navn;
+            modal.querySelector(".modal-oprindelsesregion").textContent = "Oprindelse: " + retten.oprindelsesregion;
+            modal.querySelector(".modal-langbeskrivelse").textContent = retten.langbeskrivelse;
+
+            if (retten.langbeskrivelse == null) {
+                console.log("null");
+                modal.querySelector(".modal-langbeskrivelse").textContent = retten.kortbeskrivelse;
+            }
+            modal.querySelector("button").addEventListener("click", skjulModal);
+            //modal.addEventListener("click", skjulModal, false);
+        }
+
+
+        function skjulModal() {
+            console.log("skjulModal");
+            modal.classList.remove("vis");
         }
     </script>
 </body>
